@@ -1,5 +1,9 @@
 pipeline {
-    agent { label 'agent1' }
+    agent any
+
+    environment {
+        IMAGE_NAME = "jenkins-docker-demo"
+    }
 
     stages {
         stage('Clone Repository') {
@@ -12,14 +16,20 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                bat 'docker build -t jenkins-docker-demo .'
+                bat "docker build -t %IMAGE_NAME% ."
             }
         }
 
         stage('Run Container') {
             steps {
-                echo 'Running Docker container...'
-                bat 'docker run -d -p 8080:8080 --name jenkins-docker-demo jenkins-docker-demo'
+                echo 'Stopping and removing any existing container...'
+                bat '''
+                docker stop %IMAGE_NAME% || echo "No container to stop"
+                docker rm %IMAGE_NAME% || echo "No container to remove"
+                '''
+
+                echo 'Running new Docker container on port 8081...'
+                bat "docker run -d -p 8081:8080 --name %IMAGE_NAME% %IMAGE_NAME%"
             }
         }
 
