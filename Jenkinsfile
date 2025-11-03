@@ -16,27 +16,27 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                bat "docker build -t %IMAGE_NAME% ."
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Run Container') {
             steps {
                 echo 'Stopping and removing any existing container...'
-                bat '''
-                docker stop %IMAGE_NAME% || echo "No container to stop"
-                docker rm %IMAGE_NAME% || echo "No container to remove"
+                sh '''
+                    docker stop ${IMAGE_NAME} || echo "No container to stop"
+                    docker rm ${IMAGE_NAME} || echo "No container to remove"
                 '''
 
                 echo 'Running new Docker container on port 8081...'
-                bat "docker run -d -p 8081:8080 --name %IMAGE_NAME% %IMAGE_NAME%"
+                sh "docker run -d -p 8081:8080 --name ${IMAGE_NAME} ${IMAGE_NAME}"
             }
         }
 
         stage('Verify Container') {
             steps {
                 echo 'Verifying container is running...'
-                bat 'docker ps'
+                sh 'docker ps'
             }
         }
     }
