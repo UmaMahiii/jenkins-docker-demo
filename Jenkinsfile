@@ -2,7 +2,6 @@ pipeline {
     agent { label 'agent1' }
 
     stages {
-
         stage('Clone Repository') {
             steps {
                 echo 'Cloning repository...'
@@ -13,28 +12,28 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t jenkins-docker-demo .'
+                bat 'docker build -t jenkins-docker-demo .'
             }
         }
 
         stage('Run Container') {
             steps {
                 echo 'Running Docker container...'
-                sh 'docker run -d -p 8081:80 --name demo-container jenkins-docker-demo || echo "Container already running"'
+                bat 'docker run -d -p 8080:8080 --name jenkins-docker-demo jenkins-docker-demo'
             }
         }
 
         stage('Verify Container') {
             steps {
-                echo 'Listing running containers...'
-                sh 'docker ps'
+                echo 'Verifying container is running...'
+                bat 'docker ps'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Pipeline completed successfully!'
+            echo '✅ Pipeline executed successfully!'
         }
         failure {
             echo '❌ Pipeline failed. Check logs for errors.'
